@@ -125,6 +125,12 @@ function watchRoom(roomId) {
   });
 }
 
+// 自動退室設定
+const playerRef = ref(database, `rooms/${roomId}/player1`);
+onDisconnect(playerRef).remove();
+
+
+
 function startGame(roomId, player1, player2) {
   console.log(`ゲーム開始！ ルーム: ${roomId} プレイヤー1: ${player1} プレイヤー2: ${player2}`);
   // TODO: ここからゲームの初期化処理や画面遷移などを実装
