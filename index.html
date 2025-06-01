@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ターン制カードバトル</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <h1>ターン制カードバトル</h1>
 
@@ -28,7 +30,20 @@
     <div id="log"></div>
   </div>
 
+  <div>
+    <h2>ルームに参加</h2>
+    <input type="text" id="roomIdInput" placeholder="ルームIDを入力">
+    <button onclick="joinRoom()">参加するze</button>
+  </div>
+
+
+
   <script src="script.js"></script>
+<script type="module">
+  import { joinRoom } from './app.js';
+  window.joinRoom = joinRoom;  // グローバルに公開
+</script>
+
 </body>
 
 </html>
