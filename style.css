@@ -1,0 +1,43 @@
+body {
+  font-family: sans-serif;
+  background-color: #1e1e2e;
+  color: #ffffff;
+  text-align: center;
+}
+
+.status {
+  margin: 20px;
+  font-size: 1.2rem;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.card {
+  background-color: #3e3e50;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100px;
+  cursor: pointer;
+  border: 2px solid #888;
+}
+
+.card:hover {
+  background-color: #5e5e80;
+}
+
+#log {
+  margin-top: 20px;
+  min-height: 50px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}

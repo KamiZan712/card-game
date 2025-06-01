@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ターン制カードバトル</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <h1>ターン制カードバトル</h1>
+
+  <!-- デッキ構築画面 -->
+  <div id="deck-builder">
+    <h2>デッキを構築しよう（最大10枚）</h2>
+    <div id="card-pool" class="card-container"></div>
+    <h3>選んだカード（<span id="deck-count">0</span>/10）</h3>
+    <div id="deck-preview" class="card-container"></div>
+    <button id="start-game" disabled>バトル開始！</button>
+  </div>
+
+  <!-- バトル画面 -->
+  <div id="battle-area" style="display:none;">
+    <div class="status">
+      <div>プレイヤーHP: <span id="player-hp">30</span></div>
+      <div>敵HP: <span id="enemy-hp">30</span></div>
+    </div>
+    <div id="hand" class="card-container"></div>
+    <div id="log"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
