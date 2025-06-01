@@ -26,11 +26,11 @@ const database = getDatabase(app);
 
 //サービスワーカーの登録
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered', reg))
-      .catch(err => console.error('Service Worker registration failed', err));
-  });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg))
+            .catch(err => console.error('Service Worker registration failed', err));
+    });
 }
 
 
@@ -66,74 +66,98 @@ let currentUserId = null;
 
 // 匿名ログイン後にUIDを保持
 onAuthStateChanged(getAuth(), (user) => {
-  if (user) {
-    currentUserId = user.uid;
-    console.log("ログイン済みUID:", currentUserId);
+    if (user) {
+        currentUserId = user.uid;
+        console.log("ログイン済みUID:", currentUserId);
+    }
+});
+
+
+function joinRoom() {
+    const roomId = document.getElementById('roomIdInput').value;
+    if (!roomId || !currentUserId) {
+        alert("ルームIDが空か、ログインが完了していません");
+        return;
+    }
+
+    const roomRef = ref(database, 'rooms/' + roomId);
+
+    get(roomRef).then((snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            // ルームが存在しない → 新規作成
+            set(roomRef, {
+                player1: currentUserId,
+                createdAt: Date.now()
+            });
+            console.log("新しいルームを作成:", roomId);
+        } else if (!data.player2 && data.player1 !== currentUserId) {
+            // ルームに空きあり → 参加
+            set(ref(database, 'rooms/' + roomId + '/player2'), currentUserId);
+            console.log("ルームに参加:", roomId);
+        } else if (data.player1 === currentUserId || data.player2 === currentUserId) {
+            console.log("すでにこのルームに参加しています");
+        } else {
+            alert("このルームは満員です");
+        }
+    });
+    // joinRoom関数の最後に追記
+    watchRoom(roomId);
+
+}
+
+// 例：ボタンで実行
+function goToRoom() {
+    const roomId = document.getElementById("roomIdInput").value;
+    if (!roomId) {
+        alert("ルームIDを入力してください");
+        return;
+    }
+    // ログイン後のUID（currentUserId）も一緒に渡すと便利
+    window.location.href = `room.html?roomId=${roomId}`;
+}
+
+//import { joinRoom, goToRoom } from './app.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+  const joinBtn = document.getElementById("joinButton");
+  if (joinBtn) {
+    joinBtn.addEventListener("click", () => {
+      joinRoom();
+      goToRoom();
+    });
   }
 });
 
-export function joinRoom() {
-  const roomId = document.getElementById('roomIdInput').value;
-  if (!roomId || !currentUserId) {
-    alert("ルームIDが空か、ログインが完了していません");
-    return;
-  }
-
-  const roomRef = ref(database, 'rooms/' + roomId);
-
-  get(roomRef).then((snapshot) => {
-    const data = snapshot.val();
-    if (!data) {
-      // ルームが存在しない → 新規作成
-      set(roomRef, {
-        player1: currentUserId,
-        createdAt: Date.now()
-      });
-      console.log("新しいルームを作成:", roomId);
-    } else if (!data.player2 && data.player1 !== currentUserId) {
-      // ルームに空きあり → 参加
-      set(ref(database, 'rooms/' + roomId + '/player2'), currentUserId);
-      console.log("ルームに参加:", roomId);
-    } else if (data.player1 === currentUserId || data.player2 === currentUserId) {
-      console.log("すでにこのルームに参加しています");
-    } else {
-      alert("このルームは満員です");
-    }
-  });
-  // joinRoom関数の最後に追記
-watchRoom(roomId);
-
-}
 
 function watchRoom(roomId) {
-  const roomRef = ref(database, 'rooms/' + roomId + '/');
+    const roomRef = ref(database, 'rooms/' + roomId + '/');
 
-  onValue(roomRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data) {
-      console.log("ルームが削除されたか存在しません");
-      return;
-    }
+    onValue(roomRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            console.log("ルームが削除されたか存在しません");
+            return;
+        }
 
-    const { player1, player2 } = data;
-    console.log("現在の参加者", player1, player2);
+        const { player1, player2 } = data;
+        console.log("現在の参加者", player1, player2);
 
-    if (player1 && player2) {
-      console.log("両者揃った！ゲーム開始できる！");
-      startGame(roomId, player1, player2);
-    }
-  });
+        if (player1 && player2) {
+            console.log("両者揃った！ゲーム開始できる！");
+            startGame(roomId, player1, player2);
+        }
+
+    });
+
 }
 
-// 自動退室設定
-const playerRef = ref(database, `rooms/${roomId}/player1`);
-onDisconnect(playerRef).remove();
 
 
 
 function startGame(roomId, player1, player2) {
-  console.log(`ゲーム開始！ ルーム: ${roomId} プレイヤー1: ${player1} プレイヤー2: ${player2}`);
-  // TODO: ここからゲームの初期化処理や画面遷移などを実装
+    console.log(`ゲーム開始！ ルーム: ${roomId} プレイヤー1: ${player1} プレイヤー2: ${player2}`);
+    // TODO: ここからゲームの初期化処理や画面遷移などを実装
 }
 
 
